@@ -14,14 +14,15 @@ data Weekday = Sunday | Monday | Tuesday | Wednesday | Thursday | Friday | Satur
 
 meetupDay :: Schedule -> Weekday -> Integer -> Int -> Day
 meetupDay schedule weekday year month
-  | schedule == Last   = last $ filter isWeekday fromFirstDayOfMonth
-  | schedule == Teenth = head $ filter (liftM2 (&&) isWeekday isDayTeenth) fromFirstDayOfMonth
-  | otherwise          = head $ drop (fromEnum schedule) $ filter isWeekday fromFirstDayOfMonth
+  | schedule == Last   = last $ fromFirstDayOfMonth isWeekday 
+  | schedule == Teenth = head $ fromFirstDayOfMonth $ liftM2 (&&) isWeekday isDayTeenth
+  | otherwise          = head $ drop (fromEnum schedule) $ fromFirstDayOfMonth isWeekday
   where
     toMonthDay (_,_,x) = x
-    isTeenth = flip elem [13, 14, 15, 16, 17, 18, 19]
-    isDayTeenth = isTeenth . toMonthDay . toGregorian
-    isWeekday d = formatTime defaultTimeLocale "%A" d == (show weekday)
-    fromFirstDayOfMonth = take (gregorianMonthLength year month) $
-                          iterate succ $ 
-                          fromGregorian year month 1
+    isNumTeenth = flip elem [13, 14, 15, 16, 17, 18, 19]
+    isDayTeenth = isNumTeenth . toMonthDay . toGregorian
+    isWeekday = (show weekday ==) . formatTime defaultTimeLocale "%A"
+    fromFirstDayOfMonth f = filter f $
+                            take (gregorianMonthLength year month) $
+                            iterate succ $ 
+                            fromGregorian year month 1
