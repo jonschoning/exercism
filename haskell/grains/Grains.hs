@@ -1,7 +1,7 @@
 module Grains (square, total) where
 
 square :: Integer -> Integer
-square = undefined
+square s = 2^(s-1)
 
 total :: Integer
-total = undefined
+total = 2*square 64 - 1
