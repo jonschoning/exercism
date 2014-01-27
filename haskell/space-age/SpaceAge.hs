@@ -15,4 +15,4 @@ ageOn Earth = secondsToEarthYears
 ageOn _ = undefined
 
 secondsToEarthYears :: Int -> Float
-secondsToEarthYears s = 8765.81 * 60 * 60 * (fromIntegral s)
+secondsToEarthYears s = fromIntegral s / 3.15576e7
