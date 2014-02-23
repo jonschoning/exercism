@@ -1,12 +1,11 @@
 module Binary (toDecimal) where
 
-import Control.Applicative ((<$>),(<*>))
-import Data.Char (digitToInt)
+import Data.List (foldl')
 
 toDecimal :: String -> Integer
-toDecimal s = if not (isValid s) then 0 else convert s
+toDecimal = reduce . map digit
   where 
-    isValid = all $ (||) <$> (=='1') <*> (=='0')
-    convert = toInteger . foldr (+) 0 . expandBases
-    expandBases = (zipWith (\b a -> digitToInt a * 2^b) [0..]) . reverse
+    reduce = foldl' (\b a -> a + 2*b) 0
+    digit '1' = 1
+    digit _ = 0
     
