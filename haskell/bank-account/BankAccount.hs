@@ -1,16 +1,21 @@
 module BankAccount ( BankAccount, openAccount, closeAccount
                    , getBalance, incrementBalance ) where
 
-data BankAccount = BankAccount
+import Control.Concurrent.MVar (MVar, newMVar, readMVar, modifyMVar)
+import Control.Applicative ((<$>))
+
+newtype BankAccount = BankAccount { balance :: MVar (Maybe Integer) }
 
 openAccount :: IO BankAccount
-openAccount = undefined
+openAccount = BankAccount <$> newMVar (Just 0)
 
 closeAccount :: BankAccount -> IO ()
-closeAccount = undefined
+closeAccount _ = return ()
 
 getBalance :: BankAccount -> IO (Maybe Integer)
-getBalance = undefined
+getBalance = readMVar . balance
 
 incrementBalance :: BankAccount -> Integer -> IO (Maybe Integer)
-incrementBalance = undefined
+incrementBalance acct val = modifyMVar (balance acct) update
+  where update curbal = return (newbal, newbal)
+          where newbal = (val +) <$> curbal
