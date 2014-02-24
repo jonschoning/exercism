@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Atbash (encode) where
 
 import Data.List.Split (chunksOf)
@@ -12,5 +10,5 @@ encode = unwords
          . filter isAlphaNum
   where update c 
           | isDigit c = c 
-          | otherwise = chr $ 219 - ord(toLower c)
+          | otherwise = chr $ ord 'z' + ord 'a' - ord(toLower c)
 
