@@ -13,8 +13,7 @@ normalizePlaintext :: String -> String
 normalizePlaintext = map toLower.filter isAlphaNum
 
 squareSize :: String -> Int
-squareSize s = fromMaybe 0 $ find (\i -> i*i >= len) [1..] 
-  where len = length s
+squareSize s = fromMaybe 0 $ find (\i -> fromIntegral i >= sqrt (fromIntegral (length s))) [1..] 
 
 plaintextSegments :: String -> [String]
 plaintextSegments p = let np = normalizePlaintext p in chunksOf (squareSize np) np
