@@ -29,10 +29,7 @@ defaultPlants :: String -> Plants
 defaultPlants = map (map readPlant) . lines
 
 lookupPlants :: String -> Garden -> [Plant]
-lookupPlants child (DefaultGarden plants)  = lookupPlants' (defaultChildIndex child) child plants
-  where defaultChildIndex = (2 *) . subtract (ord 'A') . ord . head
-lookupPlants child (NamedGarden plants names)  = lookupPlants' (namedChildIndex child (sort names)) child plants
-  where namedChildIndex n names = (2 *) $ fromJust $ elemIndex n names
-
-lookupPlants' :: Int -> String -> Plants -> [Plant]
-lookupPlants' startIndex child plants = take 2 . drop startIndex  =<< plants
+lookupPlants child (DefaultGarden plants) = take 2 . drop defaultChildIndex =<< plants
+  where defaultChildIndex = (2 *) . subtract (ord 'A') . ord . head $ child
+lookupPlants child (NamedGarden plants names)  = take 2 . drop namedChildIndex =<< plants
+  where namedChildIndex = (2 *) $ fromJust $ elemIndex child (sort names)
