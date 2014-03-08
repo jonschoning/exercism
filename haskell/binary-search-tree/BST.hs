@@ -22,9 +22,7 @@ singleton :: Int -> BST
 singleton a = Node Tip a Tip
 
 insert :: Int -> BST -> BST
-insert x (Tip) = error "can't insert tip"
-insert x (Node Tip a r) | x <= a = Node (singleton x) a r
-insert x (Node l a Tip) | x > a  = Node l a (singleton x)
+insert x (Tip) = singleton x
 insert x (Node l a r)   | x <= a = Node (insert x l) a r
 insert x (Node l a r)   | x > a  = Node l a (insert x r)
 
@@ -34,7 +32,5 @@ fromList (x:xs) = foldl' (flip insert) (singleton x) xs
 
 toList :: BST -> [Int] 
 toList Tip = []
-toList (Node Tip a r) = a : toList r
-toList (Node l a Tip) = toList l ++ [a]
 toList (Node l a r)   = toList l ++ [a] ++ toList r
 
