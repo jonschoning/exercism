@@ -24,11 +24,11 @@ mkRobot :: Bearing -> Coordinate -> Robot
 mkRobot = Robot
 
 simulate :: Robot -> Commands -> Robot
-simulate = foldl' step
+simulate = foldl' (step $!!)
   where 
-    step r 'R' = r { bearing = turnRight.bearing $!! r }
-    step r 'L' = r { bearing = turnLeft.bearing $!! r }
-    step r 'A' = r { coordinates = nextCoord <$> bearing <*> coordinates $!! r }
+    step r 'R' = r { bearing = turnRight.bearing $ r }
+    step r 'L' = r { bearing = turnLeft.bearing $ r }
+    step r 'A' = r { coordinates = nextCoord <$> bearing <*> coordinates $ r }
     step r _   = error "unknown command"
 
 nextCoord :: Bearing -> Coordinate -> Coordinate
