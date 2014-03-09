@@ -1,6 +1,10 @@
 module BST (bstLeft, bstRight, bstValue, singleton, insert, fromList, toList) where
 
 import Data.List (foldl')
+import Control.Applicative ((<$>),(<|>),(<*>))
+
+import Data.Foldable (Foldable, foldMap, toList)
+import Data.Monoid ((<>))
 
 data Tree a = Node { bstValue :: a
                   , bstLeft :: Maybe (Tree a)
@@ -9,19 +13,20 @@ data Tree a = Node { bstValue :: a
 
 type BST = Tree Int
 
+instance Foldable Tree where
+  foldMap f (Node x l r) = foldMaybe l <> f x <> foldMaybe r
+    where foldMaybe = foldMap (foldMap f)
+
 singleton :: Int -> BST
 singleton a = Node a Nothing Nothing
 
 insert :: Int -> BST -> BST
 insert x (Node a l r)  | x <= a    = Node a (insertMaybe l) r
                        | otherwise = Node a l (insertMaybe r)
-  where insertMaybe = maybe (Just $ singleton x) (Just . (insert x))
+  where insertMaybe = (<|> Just (singleton x)) . (insert x <$>)
 
 fromList :: [Int] -> BST
 fromList []     = error "empty tree"
 fromList (x:[]) = singleton x
 fromList (x:xs) = foldl' (flip insert) (singleton x) xs
 
-toList :: BST -> [Int] 
-toList (Node a l r) = maybeTolist l ++ [a] ++ maybeTolist r
-  where maybeTolist = maybe [] toList
