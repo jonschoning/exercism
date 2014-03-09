@@ -21,4 +21,4 @@ canAttack :: Coord -> Coord -> Bool
 canAttack (x1, y1) (x2, y2) = isRowCol || isDiag
   where 
     isRowCol = x1 == x2 || y1 == y2
-    isDiag = x1 - x2 == y1 - y2
+    isDiag = abs(x1 - x2) == abs(y1 - y2)
