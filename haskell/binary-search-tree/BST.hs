@@ -29,7 +29,5 @@ fromList (x:[]) = singleton x
 fromList (x:xs) = foldl' (flip insert) (singleton x) xs
 
 toList :: BST -> [Int] 
-toList (Node a (Nothing) (Nothing)) = [a]
-toList (Node a (Just l)  (Nothing)) = toList l ++ [a]
-toList (Node a (Nothing) (Just r))  = [a] ++ toList r
-toList (Node a (Just l)  (Just r))  = toList l ++ [a] ++ toList r
+toList (Node a l r) = maybeTolist l ++ [a] ++ maybeTolist r
+  where maybeTolist = maybe [] toList
