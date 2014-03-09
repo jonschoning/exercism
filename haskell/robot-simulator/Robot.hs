@@ -2,35 +2,33 @@ module Robot (Bearing(..), Robot, mkRobot,
               coordinates, simulate,
               bearing, turnRight, turnLeft) where
 
-import Control.Monad (liftM2)
+import Control.Applicative ((<*>), (<$>))
 import Data.List (foldl')
+import Control.DeepSeq (NFData, rnf, ($!!))
 
 data Bearing = North | East | South | West
                deriving (Show, Eq, Enum, Ord, Bounded)
 
 type Coordinate = (Int, Int)
+type Commands = String
 
-data Robot = MkRobot { 
+data Robot = Robot { 
                 bearing :: Bearing,
                 coordinates :: Coordinate }
+               deriving (Eq, Show)
 
-instance Show Robot where
-  show r = (show.bearing $ r) 
-           ++ " " ++ 
-           (show.coordinates $ r)
-
-instance Eq Robot where
-  (==) r1 r2 = (show r1) == (show r2)
+instance NFData Robot where
+  rnf (Robot bearing coordinate) = bearing `seq` rnf coordinate
 
 mkRobot :: Bearing -> Coordinate -> Robot 
-mkRobot = MkRobot
+mkRobot = Robot
 
-simulate :: Robot -> String -> Robot
+simulate :: Robot -> Commands -> Robot
 simulate = foldl' step
   where 
-    step r 'R' = r { bearing = turnRight.bearing $ r }
-    step r 'L' = r { bearing = turnLeft.bearing $ r }
-    step r 'A' = r { coordinates = liftM2 nextCoord bearing coordinates r }
+    step r 'R' = r { bearing = turnRight.bearing $!! r }
+    step r 'L' = r { bearing = turnLeft.bearing $!! r }
+    step r 'A' = r { coordinates = nextCoord <$> bearing <*> coordinates $!! r }
     step r _   = error "unknown command"
 
 nextCoord :: Bearing -> Coordinate -> Coordinate
