@@ -13,15 +13,9 @@ singleton :: Int -> BST
 singleton a = Node a Nothing Nothing
 
 insert :: Int -> BST -> BST
-insert x (Node a Nothing Nothing)  | x <= a = Node a (Just $ singleton x) (Nothing)
-                                   | x  > a = Node a (Nothing)            (Just $ singleton x)
-insert x (Node a (Just l) Nothing) | x <= a = Node a (Just $ insert x l)  (Nothing)
-                                   | x  > a = Node a (Just l)             (Just $ singleton x)
-insert x (Node a Nothing (Just r)) | x <= a = Node a (Just $ singleton x) (Just r)
-                                   | x  > a = Node a (Nothing)            (Just $ insert x r)
-insert x (Node a (Just l) (Just r))| x <= a = Node a (Just $ insert x l)  (Just r)
-                                   | x  > a = Node a (Just l)             (Just $ insert x r)
-
+insert x (Node a l r)  | x <= a    = Node a (insertMaybe l) r
+                       | otherwise = Node a l (insertMaybe r)
+  where insertMaybe = maybe (Just $ singleton x) (Just . (insert x))
 
 fromList :: [Int] -> BST
 fromList []     = error "empty tree"
