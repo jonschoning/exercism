@@ -2,35 +2,34 @@ module BST (bstLeft, bstRight, bstValue, singleton, insert, fromList, toList) wh
 
 import Data.List (foldl')
 
-data Tree a = Tip | Node (Tree  a) a (Tree a)
+data Tree a = Node { bstValue :: a
+                  , bstLeft :: Maybe (Tree a)
+                  , bstRight :: Maybe (Tree  a) }
+             deriving (Show, Eq)
 
 type BST = Tree Int
 
-bstLeft :: BST -> Maybe BST
-bstLeft (Node a _ _) = Just a
-bstLeft _ = Nothing
-
-bstRight :: BST -> Maybe BST
-bstRight (Node _ _ a) = Just a
-bstRight _ = Nothing
-
-bstValue :: BST -> Int
-bstValue (Node _ a _) = a
-bstValue Tip  = error "no tip value"
-
 singleton :: Int -> BST
-singleton a = Node Tip a Tip
+singleton a = Node a Nothing Nothing
 
 insert :: Int -> BST -> BST
-insert x (Tip) = singleton x
-insert x (Node l a r)   | x <= a = Node (insert x l) a r
-insert x (Node l a r)   | x > a  = Node l a (insert x r)
+insert x (Node a Nothing Nothing)  | x <= a = Node a (Just $ singleton x) (Nothing)
+                                   | x  > a = Node a (Nothing)            (Just $ singleton x)
+insert x (Node a (Just l) Nothing) | x <= a = Node a (Just $ insert x l)  (Nothing)
+                                   | x  > a = Node a (Just l)             (Just $ singleton x)
+insert x (Node a Nothing (Just r)) | x <= a = Node a (Just $ singleton x) (Just r)
+                                   | x  > a = Node a (Nothing)            (Just $ insert x r)
+insert x (Node a (Just l) (Just r))| x <= a = Node a (Just $ insert x l)  (Just r)
+                                   | x  > a = Node a (Just l)             (Just $ insert x r)
+
 
 fromList :: [Int] -> BST
-fromList [] = Tip
+fromList []     = error "empty tree"
+fromList (x:[]) = singleton x
 fromList (x:xs) = foldl' (flip insert) (singleton x) xs
 
 toList :: BST -> [Int] 
-toList Tip = []
-toList (Node l a r)   = toList l ++ [a] ++ toList r
-
+toList (Node a (Nothing) (Nothing)) = [a]
+toList (Node a (Just l)  (Nothing)) = toList l ++ [a]
+toList (Node a (Nothing) (Just r))  = [a] ++ toList r
+toList (Node a (Just l)  (Just r))  = toList l ++ [a] ++ toList r
