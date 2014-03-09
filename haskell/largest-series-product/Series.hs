@@ -10,4 +10,6 @@ slices :: Int -> String -> [[Int]]
 slices n = filter ((n==).length) . map (take n) . tails . digits
 
 largestProduct :: Int -> String -> Int
-largestProduct i s = maximum $ map product $ slices i s
+largestProduct i s = safeMax $ map product $ slices i s
+  where safeMax [] = 1
+        safeMax xs = maximum xs
