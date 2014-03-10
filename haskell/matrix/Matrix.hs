@@ -4,39 +4,40 @@ module Matrix ( Matrix, row, column, rows, cols, shape, transpose
               , reshape, flatten, fromString, fromList) where
 
 import qualified Data.Vector as V
+import Control.Monad (join)
+import Control.Arrow ((&&&))
 
-data Matrix a = Matrix (V.Vector (V.Vector a))
-                deriving (Show, Eq)
-
-type Index = Integer
+type Matrix a = V.Vector (V.Vector a)
+type Index = Int
 type Shape = (Index, Index)
 
 rows :: Matrix a -> Index
-rows = undefined
+rows = V.length
 
 cols :: Matrix a -> Index
-cols = undefined
+cols m = if V.null m then 0 else V.length (row 0 m)
 
 row :: Index -> Matrix a -> V.Vector a
-row = undefined
+row = flip (V.!)
 
 column :: Index -> Matrix a -> V.Vector a
-column = undefined
+column c m = V.generate (rows m) atRow
+  where atRow r = (m V.! r) V.! c
 
 shape :: Matrix a -> Shape 
-shape = undefined
+shape = (rows &&& cols)
 
 transpose :: Matrix a -> Matrix a
-transpose  = undefined
+transpose m = V.fromList $ map (flip column m) [0..cols m-1]
 
 reshape :: Shape -> Matrix a -> Matrix a
-reshape = undefined
+reshape s m = undefined
 
 flatten :: Matrix a -> V.Vector a
-flatten = undefined
+flatten = join
 
-fromString :: String -> Matrix a
-fromString = undefined
+fromString :: (Read a) => String -> Matrix a
+fromString = fromList . map (map read . words) . lines
 
-fromList :: [[a]] -> Matrix a
-fromList = undefined
+fromList :: (Read a) => [[a]] -> Matrix a
+fromList = V.fromList . map V.fromList
