@@ -1,21 +1,15 @@
 module Luhn (checkDigit, addends, checksum, isValid, create) where
 
-import Data.Char
-import Data.List
+import Data.Char (digitToInt)
 
 checkDigit :: Integer -> Integer
 checkDigit = (`mod` 10)
 
 addends :: Integer -> [Integer]
-addends xs = zipWith go genCycle xstr
-  where 
-    xstr = show xs
-    genCycle = drop (length xstr `mod` 2) (cycle [0, 1])
-    go isDouble xs = let x = (toInteger.digitToInt) xs 
-                         fix a = if a >= 10 then a - 9 else a
-                     in 
-                         if even isDouble then fix (x*2) else x
-  
+addends i = map snd . scanr go (True, i `mod` 10) $ (init.show) i
+  where go xs (double, _) = let x = (toInteger.digitToInt) xs 
+                                norm a = if a >= 10 then a - 9 else a
+                            in if double then (False, norm (x*2)) else (True, x)
 
 checksum :: Integer -> Integer
 checksum = checkDigit . sum . addends
@@ -25,7 +19,6 @@ isValid = (0 ==) . checksum
 
 create :: Integer -> Integer
 create n = (+ base) . (`mod` 10) . (10-) . checksum $ base
-  where 
-    base = n * 10
+  where base = n * 10
 
 
