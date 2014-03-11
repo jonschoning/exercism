@@ -9,37 +9,37 @@ import Control.Arrow ((&&&))
 import Data.Char (isSpace)
 import qualified Data.Text as T
 
-type Matrix a = V.Vector (V.Vector a)
+data Matrix a = Matrix { q :: Shape, v :: V.Vector a }
+                deriving (Show, Eq)
 type Index = Int
 type Shape = (Index, Index)
 
 rows :: Matrix a -> Index
-rows = V.length
+rows = fst . q
+-- rows = V.length
 
 cols :: Matrix a -> Index
-cols m = if V.null m then 0 else V.length (row 0 m)
+cols = snd . q
 
 row :: Index -> Matrix a -> V.Vector a
-row = flip (V.!)
+row i (Matrix (r, c) v) = V.slice start len v
+  where start = i * c
+        len = c
 
 column :: Index -> Matrix a -> V.Vector a
-column c m = V.generate (rows m) atRow
-  where atRow r = (m V.! r) V.! c
+column i (Matrix (r, c) v) = undefined
 
 shape :: Matrix a -> Shape 
-shape = (rows &&& cols)
+shape = q
 
 transpose :: Matrix a -> Matrix a
-transpose m = V.fromList $ map (flip column m) [0..cols m-1]
+transpose (Matrix s v) = Matrix (snd s, fst s) v
 
 reshape :: Shape -> Matrix a -> Matrix a
-reshape (r,c) = V.ifoldl' go (V.replicate r V.empty) . flatten
-  where go !accM i x = let appendToCol accRowInd accV = 
-                            if accRowInd /= (i `div` (c)) then accV else V.snoc accV x
-                      in V.imap appendToCol accM
+reshape s' (Matrix s v) = Matrix s' v
 
 flatten :: Matrix a -> V.Vector a
-flatten = join
+flatten = v
 
 fromString :: (Read a) => String -> Matrix a
 fromString xs = fromList . map parseLine . lines $ xs
@@ -54,4 +54,5 @@ parseLine xs = map read . tokenize $ xs
         filterNotEmpty = filter (not . T.null . T.dropWhile isSpace)  
 
 fromList :: [[a]] -> Matrix a
-fromList = V.fromList . map V.fromList
+fromList l = let v = V.fromList . map V.fromList $ l
+             in Matrix (V.length v, maybe 0 V.length (v V.!? 0)) (join v)

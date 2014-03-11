@@ -1,7 +1,6 @@
 module Luhn (checkDigit, addends, checksum, isValid, create) where
 
-import Data.Char
-import Data.List
+import Data.Char (digitToInt)
 
 checkDigit :: Integer -> Integer
 checkDigit = (`mod` 10)
@@ -15,7 +14,6 @@ addends = reverse
   where doubler = let f x = if x >= 10 then x - 9 else x 
                   in f . (*2)
                   
-
 checksum :: Integer -> Integer
 checksum = checkDigit . sum . addends
 
