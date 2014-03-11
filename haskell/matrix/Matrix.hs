@@ -31,7 +31,10 @@ transpose :: Matrix a -> Matrix a
 transpose m = V.fromList $ map (flip column m) [0..cols m-1]
 
 reshape :: Shape -> Matrix a -> Matrix a
-reshape s m = undefined
+reshape (r,c) = V.ifoldl' go (V.replicate r V.empty) . flatten
+  where go !accM i x = let appendToCol accRowInd accV = 
+                            if accRowInd /= (i `div` (c)) then accV else V.snoc accV x
+                      in V.imap appendToCol accM
 
 flatten :: Matrix a -> V.Vector a
 flatten = join
