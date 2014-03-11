@@ -6,6 +6,8 @@ module Matrix ( Matrix, row, column, rows, cols, shape, transpose
 import qualified Data.Vector as V
 import Control.Monad (join)
 import Control.Arrow ((&&&))
+import Data.Char (isSpace)
+import qualified Data.Text as T
 
 type Matrix a = V.Vector (V.Vector a)
 type Index = Int
@@ -40,7 +42,16 @@ flatten :: Matrix a -> V.Vector a
 flatten = join
 
 fromString :: (Read a) => String -> Matrix a
-fromString = fromList . map (map read . words) . lines
+fromString xs = fromList . map parseLine . lines $ xs
 
-fromList :: (Read a) => [[a]] -> Matrix a
+parseLine :: (Read a) => String -> [a]
+parseLine xs = map read . tokenize $ xs
+  where tokenize s = if (head s == '\"') then tokenizeString s else words s
+        tokenizeString = map T.unpack . tokenizeText . T.pack
+        tokenizeText = map wrapDelimiters . filterNotEmpty . splitDelimiters
+        splitDelimiters = T.splitOn (T.pack "\"")
+        wrapDelimiters = (flip T.snoc) '\"' . T.cons '\"'
+        filterNotEmpty = filter (not . T.null . T.dropWhile isSpace)  
+
+fromList :: [[a]] -> Matrix a
 fromList = V.fromList . map V.fromList
