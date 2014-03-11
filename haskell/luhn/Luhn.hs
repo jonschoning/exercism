@@ -7,15 +7,14 @@ checkDigit :: Integer -> Integer
 checkDigit = (`mod` 10)
 
 addends :: Integer -> [Integer]
-addends xs = zipWith go genCycle xstr
-  where 
-    xstr = show xs
-    genCycle = drop (length xstr `mod` 2) (cycle [0, 1])
-    go isDouble xs = let x = (toInteger.digitToInt) xs 
-                         fix a = if a >= 10 then a - 9 else a
-                     in 
-                         if even isDouble then fix (x*2) else x
-  
+addends = reverse
+          . zipWith ($) (cycle [id, doubler])
+          . map (toInteger . digitToInt)
+          . reverse
+          . show
+  where doubler = let f x = if x >= 10 then x - 9 else x 
+                  in f . (*2)
+                  
 
 checksum :: Integer -> Integer
 checksum = checkDigit . sum . addends
@@ -24,8 +23,7 @@ isValid :: Integer -> Bool
 isValid = (0 ==) . checksum
 
 create :: Integer -> Integer
-create n = (+ base) . (`mod` 10) . (10-) . checksum $ base
-  where 
-    base = n * 10
+create n = (+ n10) . (`mod` 10) . (10-) . checksum $ n10
+  where n10 = n * 10
 
 
