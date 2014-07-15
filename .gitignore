@@ -9,4 +9,8 @@ perl5/
 python/
 ruby/
 scala/
+csharp/
+fsharp/
+swift/
 *.vim
+
