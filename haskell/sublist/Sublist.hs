@@ -8,10 +8,15 @@ data Sublist =  Equal
               | Unequal deriving (Show, Eq)
 
 sublist :: (Eq a) => [a] -> [a] -> Sublist
-sublist x y 
-  | (null x) && (null y) = Equal
-  | length x == length y && and (zipWith (==) x y) = Equal
-  | x `isInfixOf` y = Sublist
-  | y `isInfixOf` x = Superlist
+sublist xs ys 
+  | isEqual True xs ys = Equal
+  | xs `isInfixOf` ys = Sublist
+  | ys `isInfixOf` xs = Superlist
   | otherwise = Unequal
+  where
+    isEqual False _      _      = False
+    isEqual True  []     []     = True
+    isEqual _     (a:as) []     = False
+    isEqual _     []     (b:bs) = False
+    isEqual _     (a:as) (b:bs) = isEqual (a == b) as bs
 
