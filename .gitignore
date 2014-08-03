@@ -12,5 +12,7 @@ scala/
 csharp/
 fsharp/
 swift/
+erlang/
+lua/
 *.vim
 
