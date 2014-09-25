@@ -14,5 +14,6 @@ fsharp/
 swift/
 erlang/
 lua/
+cpp/
 *.vim
 
