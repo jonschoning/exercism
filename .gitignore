@@ -15,5 +15,8 @@ swift/
 erlang/
 lua/
 cpp/
+java/
+lisp/
+plsql/
 *.vim
 
