@@ -20,3 +20,5 @@ lisp/
 plsql/
 *.vim
 
+Guardfile
+php
