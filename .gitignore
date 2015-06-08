@@ -18,6 +18,8 @@ cpp/
 java/
 lisp/
 plsql/
+rust/
+scheme/
 *.vim
 
 Guardfile
