@@ -24,3 +24,5 @@ scheme/
 
 Guardfile
 php
+elisp/
+lfe/
