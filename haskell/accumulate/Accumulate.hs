@@ -1,4 +1,6 @@
-module Accumulate (accumulate) where
+module Accumulate
+  ( accumulate
+  ) where
 
 accumulate :: (a -> b) -> [a] -> [b]
 accumulate f [] = []

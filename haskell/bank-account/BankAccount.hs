@@ -1,10 +1,17 @@
-module BankAccount ( BankAccount, openAccount, closeAccount
-                   , getBalance, incrementBalance ) where
+module BankAccount
+  ( BankAccount
+  , openAccount
+  , closeAccount
+  , getBalance
+  , incrementBalance
+  ) where
 
-import Control.Concurrent.MVar (MVar, newMVar, readMVar, modifyMVar)
 import Control.Applicative ((<$>))
+import Control.Concurrent.MVar (MVar, modifyMVar, newMVar, readMVar)
 
-newtype BankAccount = BankAccount { balance :: MVar (Maybe Integer) }
+newtype BankAccount = BankAccount
+  { balance :: MVar (Maybe Integer)
+  }
 
 openAccount :: IO BankAccount
 openAccount = BankAccount <$> newMVar (Just 0)
@@ -17,5 +24,7 @@ getBalance = readMVar . balance
 
 incrementBalance :: BankAccount -> Integer -> IO (Maybe Integer)
 incrementBalance acct val = modifyMVar (balance acct) update
-  where update curbal = return (newbal, newbal)
-          where newbal = (val +) <$> curbal
+  where
+    update curbal = return (newbal, newbal)
+      where
+        newbal = (val +) <$> curbal

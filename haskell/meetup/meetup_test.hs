@@ -1,19 +1,21 @@
-import Test.HUnit (Assertion, (@=?), runTestTT, Test(..), Counts(..))
-import System.Exit (ExitCode(..), exitWith)
-import Meetup (Weekday(..), Schedule(..), meetupDay)
 import Data.Time.Calendar (fromGregorian)
+import Meetup (Schedule(..), Weekday(..), meetupDay)
+import System.Exit (ExitCode(..), exitWith)
+import Test.HUnit (Assertion, Counts(..), Test(..), (@=?), runTestTT)
 
 exitProperly :: IO Counts -> IO ()
 exitProperly m = do
   counts <- m
-  exitWith $ if failures counts /= 0 || errors counts /= 0 then ExitFailure 1 else ExitSuccess
+  exitWith $
+    if failures counts /= 0 || errors counts /= 0
+      then ExitFailure 1
+      else ExitSuccess
 
 testCase :: String -> Assertion -> Test
 testCase label assertion = TestLabel label (TestCase assertion)
 
 main :: IO ()
-main = exitProperly $ runTestTT $ TestList
-       [ TestList meetupDayTests ]
+main = exitProperly $ runTestTT $ TestList [TestList meetupDayTests]
 
 -- NOTE: This would be a good opportunity to write some QuickCheck properties.
 meetupDayTests :: [Test]
@@ -45,9 +47,9 @@ meetupDayTests =
   , testCase "friteenth of april 2013" $
     fromGregorian 2013 4 19 @=? meetupDay Teenth Friday 2013 4
   , testCase "friteenth of august 2013" $
-    fromGregorian 2013 8 16@=? meetupDay Teenth Friday 2013 8
+    fromGregorian 2013 8 16 @=? meetupDay Teenth Friday 2013 8
   , testCase "friteenth of september 2013" $
-    fromGregorian 2013 9 13@=? meetupDay Teenth Friday 2013 9
+    fromGregorian 2013 9 13 @=? meetupDay Teenth Friday 2013 9
   , testCase "saturteenth of february 2013" $
     fromGregorian 2013 2 16 @=? meetupDay Teenth Saturday 2013 2
   , testCase "saturteenth of april 2013" $

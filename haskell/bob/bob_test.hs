@@ -1,11 +1,14 @@
-import Test.HUnit (Assertion, (@=?), runTestTT, Test(..), Counts(..))
-import System.Exit (ExitCode(..), exitWith)
 import Bob (responseFor)
+import System.Exit (ExitCode(..), exitWith)
+import Test.HUnit (Assertion, Counts(..), Test(..), (@=?), runTestTT)
 
 exitProperly :: IO Counts -> IO ()
 exitProperly m = do
   counts <- m
-  exitWith $ if failures counts /= 0 || errors counts /= 0 then ExitFailure 1 else ExitSuccess
+  exitWith $
+    if failures counts /= 0 || errors counts /= 0
+      then ExitFailure 1
+      else ExitSuccess
 
 testCase :: String -> Assertion -> Test
 testCase label assertion = TestLabel label (TestCase assertion)
@@ -15,8 +18,7 @@ test_respondsToSomething =
   "Whatever." @=? responseFor "Tom-ay-to, tom-aaaah-to."
 
 test_respondsToShouts :: Assertion
-test_respondsToShouts =
-  "Woah, chill out!" @=? responseFor "WATCH OUT!"
+test_respondsToShouts = "Woah, chill out!" @=? responseFor "WATCH OUT!"
 
 test_respondsToQuestions :: Assertion
 test_respondsToQuestions =
@@ -36,8 +38,8 @@ test_respondsToForcefulQuestions =
 
 test_respondsToShoutingWithSpecialCharacters :: Assertion
 test_respondsToShoutingWithSpecialCharacters =
-  "Woah, chill out!" @=? responseFor (
-    "ZOMG THE %^*@#$(*^ ZOMBIES ARE COMING!!11!!1!")
+  "Woah, chill out!" @=?
+  responseFor ("ZOMG THE %^*@#$(*^ ZOMBIES ARE COMING!!11!!1!")
 
 test_respondsToShoutingNumbers :: Assertion
 test_respondsToShoutingNumbers =
@@ -52,40 +54,35 @@ test_respondsToStatementContainingQuestionMark =
   "Whatever." @=? responseFor "Ending with ? means a question."
 
 test_respondsToSilence :: Assertion
-test_respondsToSilence =
-  "Fine. Be that way!" @=? responseFor ""
+test_respondsToSilence = "Fine. Be that way!" @=? responseFor ""
 
 test_respondsToProlongedSilence :: Assertion
-test_respondsToProlongedSilence =
-  "Fine. Be that way!" @=? responseFor "    "
+test_respondsToProlongedSilence = "Fine. Be that way!" @=? responseFor "    "
 
 test_respondsToNonLettersWithQuestion :: Assertion
-test_respondsToNonLettersWithQuestion =
-  "Sure." @=? responseFor ":) ?"
+test_respondsToNonLettersWithQuestion = "Sure." @=? responseFor ":) ?"
 
 test_respondsToMultipleLineQuestions :: Assertion
 test_respondsToMultipleLineQuestions =
-  "Whatever." @=? responseFor "\nDoes this cryogenic chamber make me look fat? \nno"
+  "Whatever." @=?
+  responseFor "\nDoes this cryogenic chamber make me look fat? \nno"
 
 test_respondsToOtherWhitespace :: Assertion
 test_respondsToOtherWhitespace =
   "Fine. Be that way!" @=? responseFor "\n\r \t\v\xA0\x2002" -- \xA0 No-break space, \x2002 En space
 
 test_respondsToOnlyNumbers :: Assertion
-test_respondsToOnlyNumbers =
-  "Whatever." @=? responseFor "1, 2, 3"
+test_respondsToOnlyNumbers = "Whatever." @=? responseFor "1, 2, 3"
 
 test_respondsToQuestionWithOnlyNumbers :: Assertion
-test_respondsToQuestionWithOnlyNumbers =
-  "Sure." @=? responseFor "4?"
+test_respondsToQuestionWithOnlyNumbers = "Sure." @=? responseFor "4?"
 
 test_respondsToUnicodeShout :: Assertion
 test_respondsToUnicodeShout =
   "Woah, chill out!" @=? responseFor "\xdcML\xc4\xdcTS!"
 
 test_respondsToUnicodeNonShout :: Assertion
-test_respondsToUnicodeNonShout =
-  "Whatever." @=? responseFor "\xdcML\xe4\xdcTS!"
+test_respondsToUnicodeNonShout = "Whatever." @=? responseFor "\xdcML\xe4\xdcTS!"
 
 respondsToTests :: [Test]
 respondsToTests =
@@ -95,18 +92,22 @@ respondsToTests =
   , testCase "forceful talking" test_respondsToForcefulTalking
   , testCase "acronyms" test_respondsToAcronyms
   , testCase "forceful questions" test_respondsToForcefulQuestions
-  , testCase "shouting with special characters"
-    test_respondsToShoutingWithSpecialCharacters
+  , testCase
+      "shouting with special characters"
+      test_respondsToShoutingWithSpecialCharacters
   , testCase "shouting numbers" test_respondsToShoutingNumbers
-  , testCase "shouting with no exclamation mark"
-    test_respondsToShoutingWithNoExclamationMark
-  , testCase "statement containing question mark"
-    test_respondsToStatementContainingQuestionMark
+  , testCase
+      "shouting with no exclamation mark"
+      test_respondsToShoutingWithNoExclamationMark
+  , testCase
+      "statement containing question mark"
+      test_respondsToStatementContainingQuestionMark
   , testCase "silence" test_respondsToSilence
   , testCase "prolonged silence" test_respondsToProlongedSilence
   , testCase "questioned nonsence" test_respondsToNonLettersWithQuestion
-  , testCase "multiple-line statement containing question mark"
-    test_respondsToMultipleLineQuestions
+  , testCase
+      "multiple-line statement containing question mark"
+      test_respondsToMultipleLineQuestions
   , testCase "all whitespace is silence" test_respondsToOtherWhitespace
   , testCase "only numbers" test_respondsToOnlyNumbers
   , testCase "question with only numbers" test_respondsToQuestionWithOnlyNumbers

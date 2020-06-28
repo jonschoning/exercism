@@ -1,8 +1,14 @@
-module School (School, add, empty, grade, sorted) where
+module School
+  ( School
+  , add
+  , empty
+  , grade
+  , sorted
+  ) where
 
-import qualified Data.Map.Strict as M
-import Data.List (sort)
 import Control.Arrow (second)
+import Data.List (sort)
+import qualified Data.Map.Strict as M
 
 type School = M.Map Int [String]
 
@@ -17,4 +23,5 @@ grade = M.findWithDefault []
 
 sorted :: School -> [(Int, [String])]
 sorted = sortNames . M.toAscList
-  where sortNames = map $ second sort
+  where
+    sortNames = map $ second sort

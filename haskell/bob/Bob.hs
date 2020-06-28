@@ -8,7 +8,7 @@ responseFor a
   | isCaps = "Woah, chill out!"
   | isQuestion = "Sure."
   | otherwise = "Whatever."
-  where 
+  where
     isEmpty = all isSpace a
     isCaps = all isUpper onlyAlpha && not (null onlyAlpha)
     isQuestion = last a == '?'

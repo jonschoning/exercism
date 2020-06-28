@@ -1,4 +1,6 @@
-module LeapYear (isLeapYear) where
+module LeapYear
+  ( isLeapYear
+  ) where
 
 isLeapYear :: Int -> Bool
 isLeapYear y = mod4 && (not mod100 || mod100 && mod400)

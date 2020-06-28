@@ -1,13 +1,16 @@
-module Hexadecimal (hexToInt) where
+module Hexadecimal
+  ( hexToInt
+  ) where
 
-import Data.List (foldl')
-import Data.Char (isDigit, digitToInt)
 import Control.Monad (liftM2)
+import Data.Char (digitToInt, isDigit)
+import Data.List (foldl')
 
 hexToInt :: String -> Int
-hexToInt h | any (liftM2 (&&) (not.isDigit) (not.(`elem` ['a'..'f']))) h = 0
-hexToInt h = foldl' (\b a -> digit a + 16*b) 0 h
-  where 
+hexToInt h
+  | any (liftM2 (&&) (not . isDigit) (not . (`elem` ['a' .. 'f']))) h = 0
+hexToInt h = foldl' (\b a -> digit a + 16 * b) 0 h
+  where
     digit 'a' = 10
     digit 'b' = 11
     digit 'c' = 12

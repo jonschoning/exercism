@@ -1,9 +1,14 @@
-import Test.HUnit (Assertion, (@=?), runTestTT, Test(..), Counts(..))
-import System.Exit (ExitCode(..), exitWith)
-import BankAccount ( BankAccount, openAccount, closeAccount
-                   , getBalance, incrementBalance )
+import BankAccount
+  ( BankAccount
+  , closeAccount
+  , getBalance
+  , incrementBalance
+  , openAccount
+  )
 import Control.Concurrent
-import Control.Monad (void, replicateM)
+import Control.Monad (replicateM, void)
+import System.Exit (ExitCode(..), exitWith)
+import Test.HUnit (Assertion, Counts(..), Test(..), (@=?), runTestTT)
 
 {-
 The BankAccount module should support four calls:
@@ -23,28 +28,33 @@ updateBalance account amount
 
 The initial balance of the bank account should be 0.
 -}
-
 exitProperly :: IO Counts -> IO ()
 exitProperly m = do
   counts <- m
-  exitWith $ if failures counts /= 0 || errors counts /= 0 then ExitFailure 1 else ExitSuccess
+  exitWith $
+    if failures counts /= 0 || errors counts /= 0
+      then ExitFailure 1
+      else ExitSuccess
 
 testCase :: String -> Assertion -> Test
 testCase label assertion = TestLabel label (TestCase assertion)
 
 main :: IO ()
-main = exitProperly $ runTestTT $ TestList
-  [ withBank "initial balance is 0" $
-    checkReturn (Just 0) . getBalance
-  , withBank "incrementing and checking balance" $ \acct -> do
-    checkReturn (Just 0) $ getBalance acct
-    checkReturn (Just 10) $ incrementBalance acct 10
-    checkReturn (Just 10) $ getBalance acct
-  , withBank "incrementing balance from other processes then checking it\
+main =
+  exitProperly $
+  runTestTT $
+  TestList
+    [ withBank "initial balance is 0" $ checkReturn (Just 0) . getBalance
+    , withBank "incrementing and checking balance" $ \acct -> do
+        checkReturn (Just 0) $ getBalance acct
+        checkReturn (Just 10) $ incrementBalance acct 10
+        checkReturn (Just 10) $ getBalance acct
+    , withBank
+        "incrementing balance from other processes then checking it\
              \from test process" $ \acct -> do
-    replicateM 20 (incrementProc acct) >>= mapM_ (void . takeMVar)
-    checkReturn (Just 20) (getBalance acct)
-  ]
+        replicateM 20 (incrementProc acct) >>= mapM_ (void . takeMVar)
+        checkReturn (Just 20) (getBalance acct)
+    ]
 
 incrementProc :: BankAccount -> IO (MVar ())
 incrementProc acct = do
@@ -60,7 +70,8 @@ checkReturn expect test = do
   expect @=? v
 
 withBank :: String -> (BankAccount -> Assertion) -> Test
-withBank label f = testCase label $ do
-  acct <- openAccount
-  f acct
-  closeAccount acct
+withBank label f =
+  testCase label $ do
+    acct <- openAccount
+    f acct
+    closeAccount acct

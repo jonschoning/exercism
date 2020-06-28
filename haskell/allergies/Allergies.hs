@@ -1,16 +1,21 @@
-module Allergies (Allergen(..), isAllergicTo, allergies) where
+module Allergies
+  ( Allergen(..)
+  , isAllergicTo
+  , allergies
+  ) where
 
 import Data.Bits (testBit)
 
-data Allergen = Eggs
-                | Peanuts
-                | Shellfish
-                | Strawberries 
-                | Tomatoes
-                | Chocolate
-                | Pollen
-                | Cats
-                deriving (Show, Eq, Ord, Enum)
+data Allergen
+  = Eggs
+  | Peanuts
+  | Shellfish
+  | Strawberries
+  | Tomatoes
+  | Chocolate
+  | Pollen
+  | Cats
+  deriving (Show, Eq, Ord, Enum)
 
 isAllergicTo :: Allergen -> Integer -> Bool
 isAllergicTo a = flip testBit $ fromEnum a

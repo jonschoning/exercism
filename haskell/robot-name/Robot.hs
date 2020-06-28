@@ -1,10 +1,16 @@
-module Robot (robotName, mkRobot, resetName) where
+module Robot
+  ( robotName
+  , mkRobot
+  , resetName
+  ) where
 
+import Control.Applicative
 import Data.IORef
 import System.Random
-import Control.Applicative
 
-newtype Robot = Robot { name :: IORef String }
+newtype Robot = Robot
+  { name :: IORef String
+  }
 
 mkRobot :: IO Robot
 mkRobot = Robot <$> (generateName >>= newIORef)

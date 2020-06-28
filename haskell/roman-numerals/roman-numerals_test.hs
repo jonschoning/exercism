@@ -1,21 +1,24 @@
-import Test.HUnit (Assertion, (@=?), runTestTT, Test(..), Counts(..))
-import System.Exit (ExitCode(..), exitWith)
 import Roman (numerals)
+import System.Exit (ExitCode(..), exitWith)
+import Test.HUnit (Assertion, Counts(..), Test(..), (@=?), runTestTT)
 
 exitProperly :: IO Counts -> IO ()
 exitProperly m = do
   counts <- m
-  exitWith $ if failures counts /= 0 || errors counts /= 0 then ExitFailure 1 else ExitSuccess
+  exitWith $
+    if failures counts /= 0 || errors counts /= 0
+      then ExitFailure 1
+      else ExitSuccess
 
 testCase :: String -> Assertion -> Test
 testCase label assertion = TestLabel label (TestCase assertion)
 
 main :: IO ()
-main = exitProperly $ runTestTT $ TestList
-       [ TestList numeralsTests ]
+main = exitProperly $ runTestTT $ TestList [TestList numeralsTests]
 
 numeralsTests :: [Test]
-numeralsTests = map TestCase $
+numeralsTests =
+  map TestCase $
   [ "I" @=? numerals 1
   , "II" @=? numerals 2
   , "III" @=? numerals 3
